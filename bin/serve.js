@@ -121,10 +121,9 @@ function withdrawToAddress(address) {
 
   // build tx
   // TODO: round division
-  var createrawtransaction = `${serverCmd} txc.sh ${txo.k.split(':')[1]
-    } 0 ${pubkey} ${newamount / 1000000} ${address} ${amount / 1000000} ${key}`
+  var createrawtransaction = `${serverCmd} bin/txc.sh ${txo.k.split(':')[1]
+    } ${txo.k.split(':')[2]} ${address} ${amount / 1000000} ${key} ${pubkey} ${newamount / 1000000}`
   console.log(createrawtransaction)
-  console.log('sign and send that!')
 
   // trap response
   exec(createrawtransaction, (error, stdout, stderr) => {
@@ -134,8 +133,10 @@ function withdrawToAddress(address) {
     }
     console.log(`stdout: ${stdout}`)
     console.error(`stderr: ${stderr}`)
-    var newtxo = `txo:${stdout}`
-    if (newtxo && newtxo.length === 68) {
+    stdout = stdout.replace('\n', '')
+    var newtxo = `txo:${stdout}:1`
+    console.log('newtxo', newtxo)
+    if (stdout && stdout.length === 64) {
       // if successful update ledger
       // subtract txo
       delete ledger[txo.k]
