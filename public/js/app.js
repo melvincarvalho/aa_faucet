@@ -30,16 +30,18 @@ function renderAll() {
     html`
       <${Navbar} title="Welcome to Bitmark Faucet!" />
 
+      <form>
       <div class="row">
       <h6>
       Available: 1000 marks per day per IP
       </h6>
       <label>Enter Withdrawal Address:</label>
       <br/>
-      <input autofocus size="40" />
+      <input name="address" autofocus size="40" />
       <br/>
       <button>Withdraw 1000 marks!</button>
       </div>
+      </form>
 
       `,
     document.body
