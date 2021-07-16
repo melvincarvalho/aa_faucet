@@ -1,11 +1,11 @@
 {
   "name": "aa_faucet",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "faucet",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "pm2 start --name aa_faucet_server ./node_modules/skill-serve/bin/serve.js",
+    "server": "pm2 start --name aa_faucet_server ./bin/serve.js",
     "updater": "pm2 start --name aa_faucet_updater ./node_modules/skill-updater/bin/deploy.sh --restart-delay=300000"
   },
   "repository": {
