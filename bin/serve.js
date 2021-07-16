@@ -1,7 +1,50 @@
 #!/usr/bin/env node
 
+const fs = require('fs')
+const homedir = require('os').homedir()
+const exec = require('child_process').exec
 const handler = require('serve-handler')
 const http = require('http')
+
+function getPrivKey() {
+  try {
+    const fetchHeadDir = './.git/'
+    var fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
+
+    var fetchHead = fs.readFileSync(fetchHeadFile).toString()
+
+    var repo = fetchHead
+      .split(' ')
+      .pop()
+      .replace(':', '/')
+      .replace('\n', '')
+
+    const gitmarkRepoBase = homedir + '/.gitmark/repo'
+
+    const gitmarkFile = gitmarkRepoBase + '/' + repo + '/gitmark.json'
+
+    return require(gitmarkFile).privkey58
+  } catch (e) {
+    const fetchHeadDir = './.git/'
+    var fetchHeadFile = fetchHeadDir + 'FETCH_HEAD'
+
+    var fetchHead = fs.readFileSync(fetchHeadFile).toString()
+
+    var repo = fetchHead
+      .split(' ')
+      .pop()
+      .replace(':', '/')
+      .replace('\n', '')
+
+    const gitmarkRepoBase = homedir + '/.gitmark/repo'
+
+    const gitmarkFile = gitmarkRepoBase + '/' + repo + '/gitmark.json'
+
+    console.log('no priv key found in', gitmarkFile)
+    return undefined
+  }
+}
+
 var port = 5000
 var root = '.'
 var options = {}
@@ -24,18 +67,20 @@ try {
 
 function findValueByPrefix(object, prefix) {
   for (var property in object) {
-    if (object.hasOwnProperty(property) &&
-      property.toString().startsWith(prefix)) {
-      return object[property];
+    if (
+      object.hasOwnProperty(property) &&
+      property.toString().startsWith(prefix)
+    ) {
+      return { k: property, v: object[property] }
     }
   }
 }
-
 
 function withdrawToAddress(address) {
   const amount = 1000
   const fee = 10
   const pubkey = 'bLSMWcELqH9Y9ajmNuSrwbTCUVzJ94YpTb'
+  const serverCmd = 'ssh ubuntu@157.90.144.229'
 
   // validate address
   if (address.length !== 34) {
@@ -58,7 +103,7 @@ function withdrawToAddress(address) {
   }
 
   // get txo:
-  var txo = findValueByPrefix(ledger, "txo:")
+  var txo = findValueByPrefix(ledger, 'txo:')
   if (!txo) {
     console.error('no txo found')
     return
@@ -66,21 +111,41 @@ function withdrawToAddress(address) {
   console.log('txo:', txo)
 
   // get amounts
-  var newamount = txo - (amount + fee)
+  var newamount = txo.v - (amount + fee)
+
+  // get key
+  var key = getPrivKey()
+  console.log(key)
+
+  // translate key into base58address
 
   // build tx
   // TODO: round division
-  var createrawtransaction = `txc.sh '[{"txid": "${txo}", "vout": 0}]' '{"${pubkey}": ${(newamount / 1000000)}, "${address}": 0.000001}' key`
+  var createrawtransaction = `${serverCmd} txc.sh ${txo.k.split(':')[1]
+    } 0 ${pubkey} ${newamount / 1000000} ${address} ${amount / 1000000} ${key}`
   console.log(createrawtransaction)
   console.log('sign and send that!')
 
   // trap response
-
-  // if successful update ledger
-  // add bitmark address
-  // subtract txo
-  // write ledger
-
+  exec(createrawtransaction, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`exec error: ${error}`)
+      return
+    }
+    console.log(`stdout: ${stdout}`)
+    console.error(`stderr: ${stderr}`)
+    var newtxo = `txo:${stdout}`
+    if (newtxo && newtxo.length === 68) {
+      // if successful update ledger
+      // subtract txo
+      delete ledger[txo.k]
+      ledger[address] = amount
+      ledger[newtxo] = newamount
+      // write ledger
+      console.log('ledger', JSON.stringify(ledger, null, 2))
+      fs.writeFileSync(ledgerFile, JSON.stringify(ledger, null, 2))
+    }
+  })
 }
 
 const server = http.createServer((request, response) => {

@@ -20,6 +20,8 @@
   },
   "homepage": "https://github.com/melvincarvalho/aa_faucet#readme",
   "dependencies": {
+    "fs": "^0.0.1-security",
+    "os": "^0.1.2",
     "skill-serve": "^0.0.6",
     "skill-updater": "^0.0.4",
     "skill-webcredits": "^0.0.3"
