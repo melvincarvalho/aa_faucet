@@ -1,0 +1,27 @@
+{
+  "name": "aa_faucet",
+  "version": "0.0.1",
+  "description": "faucet",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "pm2 start --name aa_faucet_server ./node_modules/skill-serve/bin/serve.js",
+    "updater": "pm2 start --name aa_faucet_updater ./node_modules/skill-updater/bin/deploy.sh --restart-delay=300000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/melvincarvalho/aa_faucet.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/melvincarvalho/aa_faucet/issues"
+  },
+  "homepage": "https://github.com/melvincarvalho/aa_faucet#readme",
+  "dependencies": {
+    "skill-serve": "^0.0.6",
+    "skill-updater": "^0.0.4",
+    "skill-webcredits": "^0.0.3"
+  }
+}
