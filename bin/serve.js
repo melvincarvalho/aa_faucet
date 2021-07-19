@@ -80,7 +80,7 @@ function withdrawToAddress(address) {
   const amount = 1000
   const fee = 10
   const pubkey = 'bLSMWcELqH9Y9ajmNuSrwbTCUVzJ94YpTb'
-  const serverCmd = 'ssh ubuntu@157.90.144.229'
+  const serverCmd = 'ssh -i ~/.ssh/id_btm ubuntu@157.90.144.229'
 
   // validate address
   if (address.length !== 34) {
