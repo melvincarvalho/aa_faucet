@@ -10,6 +10,7 @@ spux.year = []
 spux.yearTotal = 0
 spux.items = []
 spux.totals = []
+spux.amount = 10000
 
 spux.date = new Date().getDate()
 
@@ -33,13 +34,13 @@ function renderAll() {
       <form>
       <div class="row">
       <h6>
-      Available: 1000 marks per day per IP
+      Available: ${spux.amount} marks per day per IP
       </h6>
       <label>Enter Withdrawal Address:</label>
       <br/>
       <input name="address" autofocus size="40" />
       <br/>
-      <button>Withdraw 1000 marks!</button>
+      <button>Withdraw ${spux.amount} marks!</button>
       </div>
       </form>
 

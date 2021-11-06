@@ -77,7 +77,7 @@ function findValueByPrefix(object, prefix) {
 }
 
 function withdrawToAddress(address) {
-  const amount = 1000
+  const amount = 10000
   const fee = 10
   const pubkey = 'bLSMWcELqH9Y9ajmNuSrwbTCUVzJ94YpTb'
   const serverCmd = 'ssh -i ~/.ssh/id_btm ubuntu@157.90.144.229'
